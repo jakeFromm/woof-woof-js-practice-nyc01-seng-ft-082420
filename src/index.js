@@ -31,13 +31,13 @@ document.addEventListener("DOMContentLoaded", () => {
             dogInfoDiv.innerHTML = `
             <img src=${clickedPup.image}>
             <h2>${clickedPup.name}</h2>
-            <button class="good-dog-bad-dog-button">Good Dog!</button>
+            <button class="good-dog-bad-dog-button" data-id=${clickedPup.id}>Good Dog!</button>
             `
         } else if (clickedPup.isGoodDog == false) {
             dogInfoDiv.innerHTML = `
             <img src=${clickedPup.image}>
             <h2>${clickedPup.name}</h2>
-            <button class="good-dog-bad-dog-button">Bad Dog!</button>
+            <button class="good-dog-bad-dog-button" data-id=${clickedPup.id}>Bad Dog!</button>
             `
         }
     }
@@ -52,45 +52,33 @@ document.addEventListener("DOMContentLoaded", () => {
                     .then(response => response.json())
                     .then(clickedPup => renderPupInfoDiv(clickedPup))
             } else if (e.target.matches(".good-dog-bad-dog-button")){
-                let button = e.target
-                let dogInfoDiv = button.parentElement
-                let pupID = dogInfoDiv.dataset.id
+                const pupId = e.target.dataset.id
+                const button =e.target
+                const goodDog = e.target.textContent
+                let status = ""
 
-                fetch(baseURL + pupID)
-                    .then(response => response.json())
-                    .then(clickedPup => changeDogQuality(clickedPup))
-                
-                
+                if(goodDog == "Good Dog!"){
+                    button.textContent = "Bad Dog!"
+                    status = false
+                }else if(goodDog == "Bad Dog!"){
+                    button.textContent = "Good Dog!"
+                    status = true
+                }
+
                 const options = {
                     method: "PATCH",
                     headers: {
                         "content-type": "application/json",
                         "accept": "application/json"
                     },
-                    // body: JSON.stringify({isGoodDog: clickedPup.isGoodDog})
+                    body: JSON.stringify({isGoodDog: status})
                 }
+
+                fetch(baseURL + pupId, options)
+                .then(res =>res.json()) 
             }
         })
-
-        
-        const changeDogQuality = () => {
-             const button = document.querySelector(".good-dog-bad-dog-button")
-             button.addEventListener("click", e => {
-                 const clickTarget = e.target
-                 if (clickTarget.textContent == "Bad Dog!") {
-                     clickTarget.textContent = "Good Dog!"
-                 } else if (clickTarget.textcontent == "Good Dog!") {
-                     clickTarget.textContent = "Bad Dog!"
-                 }
-             })
-        }
-        
-        
-            
-       
     }
-
-   
     clickHandler()
     fetchPups()
 })
