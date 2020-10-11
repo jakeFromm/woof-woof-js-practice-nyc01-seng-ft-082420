@@ -13,6 +13,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    const onlyGoodDog = ()=>{
+        fetch(baseURL)
+            .then(response => response.json())
+            .then(pups => {
+                for(const pup of pups){
+                    if(pup.isGoodDog == true){
+                        renderPup(pup)
+                    }
+                }
+            })
+    }
+
     function renderPup(pupObj){
         const pupsDiv = document.querySelector("#dog-bar")
 
@@ -76,6 +88,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 fetch(baseURL + pupId, options)
                 .then(res =>res.json()) 
+            } else if (e.target.matches("#good-dog-filter")){
+                const button = e.target
+                if (button.textContent == "Filter good dogs: OFF"){
+                    button.textContent = "Filter good dogs: ON"
+                    document.querySelector('#dog-bar').innerHTML = ""
+                    onlyGoodDog()
+                } else if (button.textContent == "Filter good dogs: ON") {
+                    button.textContent = "Filter good dogs: OFF"
+                    document.querySelector('#dog-bar').innerHTML = ""
+                    fetchPups()
+                }
             }
         })
     }
